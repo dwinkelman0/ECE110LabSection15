@@ -1,5 +1,7 @@
 // Basic communication code for EGR 110 Lab Section 15
+// PLEASE CHANGE ALL "TODO"S
 
+// TODO: THIS WILL CHANGE BASED ON YOUR ROBOT'S CONFIGURATION
 // Choose a character unique to your team's robot
 #define UNIQUE_ROBOT_CODE '5'
 
@@ -7,6 +9,7 @@
 #define Rx 17 //define transmitting pin
 #define Tx 16 //define recieving pin
 
+// TODO: THIS WILL CHANGE BASED ON YOUR ROBOT'S CONFIGURATION
 // Define pins for button and LED inputs/outputs
 #define BUTTON_INPUT 10
 #define SEND_LED_OUTPUT 5
