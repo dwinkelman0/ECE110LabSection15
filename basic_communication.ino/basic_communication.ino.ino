@@ -1,7 +1,7 @@
 // Basic communication code for EGR 110 Lab Section 15
 
 // Choose a character unique to your team's robot
-#define UNIQUE_ROBOT_CODE '5';
+#define UNIQUE_ROBOT_CODE '5'
 
 // Define pins for XBee serial
 #define Rx 17 //define transmitting pin
