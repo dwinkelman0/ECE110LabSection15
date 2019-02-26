@@ -8,7 +8,7 @@
 #define Tx 16 //define recieving pin
 
 // Define pins for button and LED inputs/outputs
-#define BUTTON_INPUT 3
+#define BUTTON_INPUT 10
 #define SEND_LED_OUTPUT 5
 #define RECEIVE_LED_OUTPUT 7
 
@@ -29,7 +29,7 @@ void loop() {
   char buf[32];
 
   // If button pressed, send signal
-  if (digitalRead (3) == HIGH) {
+  if (digitalRead(BUTTON_INPUT)) {
     
     // Send signal
     char outgoing = UNIQUE_ROBOT_CODE;
