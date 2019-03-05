@@ -40,7 +40,7 @@ void loop() {
 
   // The robot is on track
   // GO STRAIGHT
-  if (!left &&  center_left &&  center_right && !right) {
+  if (!left && center_left && center_right && !right) {
     Serial.println("Forward");
     servoRight.writeMicroseconds(1440);
     servoLeft.writeMicroseconds(1560);
@@ -50,40 +50,86 @@ void loop() {
   // The robot is veering to the right of the path
   // TURN SLIGHTLY LEFT
   else
-  if (center_left && !center_right) {
+  if (!left && center_left && !center_right && !right) {
     Serial.println("Veer left");
-    servoRight.writeMicroseconds(1440);
+    servoRight.writeMicroseconds(1400);
     servoLeft.writeMicroseconds(1520);
-    delay(50);
+    delay(150);
   }
 
   // The robot is veering to the left of the path
   // TURN SLIGHTLY RIGHT
   else
-  if (!center_left &&  center_right) {
+  if (!left && !center_left && center_right && !right) {
     Serial.println("Veer right");
     servoRight.writeMicroseconds(1480);
-    servoLeft.writeMicroseconds(1560);
-    delay(50);
+    servoLeft.writeMicroseconds(1600);
+    delay(150);
   }
 
+  // TURN SOME LEFT
   else
-  if (left) {
+  if (left && center_left && !center_right && !right) {
+    servoRight.writeMicroseconds(1350);
+    servoLeft.writeMicroseconds(1450);
+    delay(150);
+  }
+
+  // TURN SOME RIGHT
+  else
+  if (!left && !center_left && center_right && right) {
+    servoRight.writeMicroseconds(1650);
+    servoLeft.writeMicroseconds(1550);
+    delay(150);
+  }
+
+  // The robot needs
+  // TURN A LOT LEFT
+  else
+  if (left && !center_left && !center_right && !right) {
     servoRight.writeMicroseconds(1350);
     servoLeft.writeMicroseconds(1470);
-    delay(50);
+    delay(150);
   }
 
+  // TURN A LOT RIGHT
   else
-  if (right) {
+  if (!left && !center_left && !center_right && right) {
     servoRight.writeMicroseconds(1530);
     servoLeft.writeMicroseconds(1650);
+    delay(150);
+  }
+
+  // TURN LEFT CORNER
+  else
+  if (left && center_left && center_right && !right) {
+    servoRight.writeMicroseconds(1350);
+    servoLeft.writeMicroseconds(1350);
     delay(50);
   }
 
-  else {
+  // TURN RIGHT CORNER
+  else
+  if (!left && center_left && center_right && right) {
+    servoRight.writeMicroseconds(1650);
+    servoLeft.writeMicroseconds(1650);
+  }
+
+  // Reaches hash
+  // STOP AND CONTINUE
+  else
+  if (left && center_left && center_right && right) {
+    delay(2000);
     servoRight.writeMicroseconds(1440);
     servoLeft.writeMicroseconds(1560);
+    delay(1000);
+  }
+
+  // Try to correct (you've f***ed up)
+  // GO BACKWARDS A LITTLE BIT
+  else {
+    servoRight.writeMicroseconds(1560);
+    servoLeft.writeMicroseconds(1440);
     delay(50);
   }
 
