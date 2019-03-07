@@ -6,14 +6,13 @@
 
 // RIGHT 52
 //       53
-//       49
 // LEFT  47
 
-const int N_PINS_QTI = 4;
-const int PINS_QTI[4] = { 47, 49, 53, 52 };
+const int N_PINS_QTI = 3;
+const int PINS_QTI[N_PINS_QTI] = { 47, 53, 52 };
 
 
-#define WHITE_BLACK_CUTOFF 20
+#define WHITE_BLACK_CUTOFF 300
 
 // Set all QTI pins to input or output
 void qti_set_io(int io_state) {
@@ -45,6 +44,10 @@ void qti_read_analog(int * output) {
       any |= res;
     }
   }
+  
+  char buf[32];
+  sprintf(buf, "%d %d %d", output[0], output[1], output[2]);
+  Serial.println(buf);
 }
 
 // Return an integer where each bit represents the state of the QTI sensor array

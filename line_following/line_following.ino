@@ -2,6 +2,7 @@
 //
 // Main control code
 //
+// Help with conditional and servo code from Emily Barre
 //
 
 #include <Servo.h>
@@ -26,12 +27,12 @@ void setup() {
 
 void loop() {
   
-  static boolean output[4];
+  static boolean output[3];
   qti_read(output);
   
   boolean left = output[0];
-  boolean center = output[1] || output[2];
-  boolean right = output[3];
+  boolean center = output[1];
+  boolean right = output[2];
 
   char buf[32];
   sprintf(buf, "%d %d %d", left, center, right);
@@ -66,6 +67,14 @@ void loop() {
     delay(1500);
     servoRight.writeMicroseconds(1440);
     servoLeft.writeMicroseconds(1560);
+    delay(1000);
+  }
+
+  // STOP
+  else
+  if (!left && !center && !right) {
+    servoRight.writeMicroseconds(1500);
+    servoLeft.writeMicroseconds(1500);
     delay(1000);
   }
 }
