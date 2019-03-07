@@ -11,8 +11,8 @@
 const int N_PINS_QTI = 3;
 const int PINS_QTI[N_PINS_QTI] = { 47, 53, 52 };
 
-
-#define WHITE_BLACK_CUTOFF 300
+#define WHITE_BLACK_CUTOFF 10
+//static int WHITE_BLACK_CUTOFF = 0;
 
 // Set all QTI pins to input or output
 void qti_set_io(int io_state) {
@@ -34,7 +34,22 @@ void qti_read_analog(int * output) {
   for (int pin_i = 0; pin_i < N_PINS_QTI; pin_i++) {
     output[pin_i] = 0;
   }
-  
+
+  /*
+  boolean any = 1;
+  long start_time = micros();
+  while (any) {
+    any = 0;
+    for (int pin_i = 0; pin_i < N_PINS_QTI; pin_i++) {
+      int res = digitalRead(PINS_QTI[pin_i]) ? 1 : 0;
+      any |= res;
+      if (!res && output[pin_i] == 0) {
+        long end_time = micros();
+        output[pin_i] = end_time - start_time;
+      }
+    }
+  }
+  */
   boolean any = 1;
   while (any) {
     any = 0;
@@ -55,6 +70,14 @@ void qti_read_analog(int * output) {
 void qti_read_digital(boolean * output) {
   static int data[N_PINS_QTI];
   qti_read_analog(data);
+  /*
+  if (WHITE_BLACK_CUTOFF == 0) {
+    WHITE_BLACK_CUTOFF = (data[0] + data[1] + data[2]) / 3;
+    char buf[32];
+    sprintf(buf, "Cutoff = %d", WHITE_BLACK_CUTOFF);
+    Serial.println(buf);
+  }
+  */
   for (int pin_i = 0; pin_i < N_PINS_QTI; pin_i++) {
     output[pin_i] = data[pin_i] > WHITE_BLACK_CUTOFF;
   }

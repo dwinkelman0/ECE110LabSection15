@@ -49,13 +49,13 @@ void loop() {
   else
   if (left && !right) {
     servoRight.writeMicroseconds(1400);
-    servoLeft.writeMicroseconds(1500);
+    servoLeft.writeMicroseconds(1450);
   }
 
   // TURN RIGHT
   else
   if (!left && right) {
-    servoRight.writeMicroseconds(1500);
+    servoRight.writeMicroseconds(1550);
     servoLeft.writeMicroseconds(1600);
   }
 
