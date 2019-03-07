@@ -11,9 +11,28 @@
 Servo servoRight;
 Servo servoLeft;
 
+#define WHITE_BLACK_THRESHOLD 80
+
+long RCTime(int pin) {
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, HIGH);
+  delay(1);
+  pinMode(pin, INPUT);
+  digitalWrite(pin, LOW);
+  
+  long duration = 0;
+  while(digitalRead(pin)) duration++;
+
+  char buf[32];
+  sprintf(buf, "%d: %d", pin, duration);
+  Serial.println(buf);
+  
+  return duration > WHITE_BLACK_THRESHOLD;
+}
+
 void setup() {
   // Set initial state of QTI sensors
-  qti_init();
+  //qti_init();
 
   // Set up servos
   servoRight.attach(PIN_SERVO_RIGHT);
@@ -26,13 +45,32 @@ void setup() {
 }
 
 void loop() {
-  
+
+  /*
   static boolean output[3];
   qti_read(output);
   
   boolean left = output[0];
   boolean center = output[1];
   boolean right = output[2];
+  */
+
+/*
+  long leftL = RCTime(47); long centerL = RCTime(51); long rightL = RCTime(52);
+
+  char buf[32];
+  sprintf(buf, "%d %d %d", leftL, centerL, rightL);
+  Serial.println(buf);
+  */
+/*
+  boolean left = leftL > WHITE_BLACK_THRESHOLD;
+  boolean center = centerL > WHITE_BLACK_THRESHOLD;
+  boolean right = rightL > WHITE_BLACK_THRESHOLD;
+  */
+
+  boolean left = RCTime(47);
+  boolean center = RCTime(51);
+  boolean right = RCTime(52);
 
   char buf[32];
   sprintf(buf, "%d %d %d", left, center, right);
@@ -48,15 +86,15 @@ void loop() {
   // TURN LEFT
   else
   if (left && !right) {
-    servoRight.writeMicroseconds(1400);
-    servoLeft.writeMicroseconds(1450);
+    servoRight.writeMicroseconds(1350);
+    servoLeft.writeMicroseconds(1500);
   }
 
   // TURN RIGHT
   else
   if (!left && right) {
-    servoRight.writeMicroseconds(1550);
-    servoLeft.writeMicroseconds(1600);
+    servoRight.writeMicroseconds(1500);
+    servoLeft.writeMicroseconds(1650);
   }
 
   // HASH
