@@ -10,6 +10,8 @@
 Servo servoRight;
 Servo servoLeft;
 
+static boolean right_history, left_history;
+
 void setup() {
   // Set initial state of QTI sensors
   qti_init();
@@ -20,6 +22,10 @@ void setup() {
 
   // Set up serial
   Serial.begin(9600);
+
+  // Set up left/right sensor history
+  right_history = false;
+  left_history = false;
 
   Serial.println("Hello");
 }
@@ -37,6 +43,9 @@ void loop() {
   char buf[32];
   sprintf(buf, "%d %d %d %d", left, center_left, center_right, right);
   Serial.println(buf);
+
+  left_history = left_history || left;
+  right_history = right_history || right;
 
   // The robot is on track
   // GO STRAIGHT
@@ -100,6 +109,7 @@ void loop() {
     delay(150);
   }
 
+  /*
   // TURN LEFT CORNER
   else
   if (left && center_left && center_right && !right) {
@@ -133,15 +143,19 @@ void loop() {
     servoLeft.writeMicroseconds(1560);
     delay(1000);
   }
+  */
 
   // Reaches all white
+  /*
   else
   if (!left && !center_left && !center_right && !right) {
     servoRight.writeMicroseconds(1500);
     servoLeft.writeMicroseconds(1500);
     delay(1000);
   }
+  */
 
+  /*
   // Try to correct (you've f***ed up)
   // GO BACKWARDS A LITTLE BIT
   else {
@@ -149,13 +163,51 @@ void loop() {
     servoLeft.writeMicroseconds(1440);
     delay(50);
   }
-
-  /*
-  // The robot is at a right corner
-  // TURN RIGHT
-  else
-  if (!left &&  center_left &&  center_right &&  right) {
-    servoRight.writeMicroseconds(
-  }
   */
+
+  if (left_history && right_history) {
+    // HASH
+    servoRight.writeMicroseconds(1500);
+    servoLeft.writeMicroseconds(1500);
+    delay(2000);
+    servoRight.writeMicroseconds(1440);
+    servoLeft.writeMicroseconds(1560);
+    delay(1000);
+
+    left_history = false;
+    right_history = true;
+  }
+
+  // Reset left/right history
+  if (!center_right && !center_left) {
+    if (left_history && !right_history) {
+      // TURN LEFT
+      servoRight.writeMicroseconds(1300);
+      servoLeft.writeMicroseconds(1490);
+      delay(1300);
+      servoRight.writeMicroseconds(1440);
+      servoLeft.writeMicroseconds(1560);
+      delay(20);
+    }
+    else if (!left_history && right_history) {
+      // TURN RIGHT
+      servoRight.writeMicroseconds(1700);
+      servoLeft.writeMicroseconds(1510);
+      delay(1300);
+      servoRight.writeMicroseconds(1440);
+      servoLeft.writeMicroseconds(1560);
+      delay(20);
+    }
+    else if (left_history && right_history) {
+      // HASH
+      servoRight.writeMicroseconds(1500);
+      servoLeft.writeMicroseconds(1500);
+      delay(2000);
+      servoRight.writeMicroseconds(1440);
+      servoLeft.writeMicroseconds(1560);
+      delay(1000);
+    }
+    left_history = false;
+    right_history = true;
+  }
 }
