@@ -44,7 +44,7 @@ void loop() {
     Serial.println("Forward");
     servoRight.writeMicroseconds(1440);
     servoLeft.writeMicroseconds(1560);
-    delay(50);
+    delay(20);
   }
 
   // The robot is veering to the right of the path
@@ -103,25 +103,42 @@ void loop() {
   // TURN LEFT CORNER
   else
   if (left && center_left && center_right && !right) {
-    servoRight.writeMicroseconds(1350);
-    servoLeft.writeMicroseconds(1350);
-    delay(50);
+    servoRight.writeMicroseconds(1300);
+    servoLeft.writeMicroseconds(1490);
+    delay(1300);
+    servoRight.writeMicroseconds(1440);
+    servoLeft.writeMicroseconds(1560);
+    delay(20);
   }
 
   // TURN RIGHT CORNER
   else
   if (!left && center_left && center_right && right) {
-    servoRight.writeMicroseconds(1650);
-    servoLeft.writeMicroseconds(1650);
+    servoRight.writeMicroseconds(1700);
+    servoLeft.writeMicroseconds(1510);
+    delay(1300);
+    servoRight.writeMicroseconds(1440);
+    servoLeft.writeMicroseconds(1560);
+    delay(20);
   }
 
   // Reaches hash
   // STOP AND CONTINUE
   else
   if (left && center_left && center_right && right) {
+    servoRight.writeMicroseconds(1500);
+    servoLeft.writeMicroseconds(1500);
     delay(2000);
     servoRight.writeMicroseconds(1440);
     servoLeft.writeMicroseconds(1560);
+    delay(1000);
+  }
+
+  // Reaches all white
+  else
+  if (!left && !center_left && !center_right && !right) {
+    servoRight.writeMicroseconds(1500);
+    servoLeft.writeMicroseconds(1500);
     delay(1000);
   }
 
