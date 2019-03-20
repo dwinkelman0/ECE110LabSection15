@@ -53,15 +53,15 @@ void loop() {
   // TURN LEFT
   else
   if (left && !right) {
-    servoRight.writeMicroseconds(1350);
-    servoLeft.writeMicroseconds(1400);
+    servoRight.writeMicroseconds(1400);
+    servoLeft.writeMicroseconds(1500);
   }
 
   // TURN RIGHT
   else
   if (!left && right) {
-    servoRight.writeMicroseconds(1600);
-    servoLeft.writeMicroseconds(1650);
+    servoRight.writeMicroseconds(1500);
+    servoLeft.writeMicroseconds(1600);
   }
 
   // HASH
@@ -72,6 +72,6 @@ void loop() {
     delay(1500);
     servoRight.writeMicroseconds(1440);
     servoLeft.writeMicroseconds(1560);
-    delay(1000);
+    delay(300);
   }
 }
