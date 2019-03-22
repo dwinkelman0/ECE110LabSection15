@@ -136,7 +136,7 @@ void loop() {
     if (is_ramp) {
     
       // Send signal
-      char outgoing = '5';
+      const char outgoing = '5';
       Serial2.print(outgoing);
   
       // Print signal to serial
@@ -150,7 +150,7 @@ void loop() {
     else {
       
       // Send signal
-      char outgoing = '6';
+      const char outgoing = '6';
       Serial2.print(outgoing);
 
       // Print signal to serial
