@@ -37,10 +37,11 @@ void loop() {
   boolean is_ramp = !rc_time(PIN_RAMP_SENSOR, RAMP_THRESHOLD);
   if (is_ramp) {
     digitalWrite(PIN_RAMP_LED_OUTPUT, HIGH);
-    delay(2000);
+    delay(50);
     digitalWrite(PIN_RAMP_LED_OUTPUT, LOW);
+    Serial.println("LED");
   }
   else {
-    delay(2000);
+    delay(50);
   }
 }
