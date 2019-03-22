@@ -5,7 +5,7 @@
 #define PIN_RAMP_LED_OUTPUT 6
 
 // QTI thresholds
-#define RAMP_THRESHOLD 1100
+#define RAMP_THRESHOLD 700
 
 // Function for measuring a QTI input
 long rc_time(int pin, long threshold) {
