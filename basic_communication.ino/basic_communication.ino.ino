@@ -19,6 +19,12 @@ void setup() {
   pinMode (BUTTON_INPUT, INPUT); // set up button pin
   pinMode (SEND_LED_OUTPUT, OUTPUT); // set up LED indicating signal sent
   pinMode (RECEIVE_LED_OUTPUT, OUTPUT); // set up LED indicating signal received
+
+  pinMode(47, INPUT);
+  pinMode(49, INPUT);
+  pinMode(51, INPUT);
+  pinMode(53, INPUT);
+  pinMode(52, INPUT);
   
   Serial.begin(9600); // set up keyboard serial
   Serial2.begin(9600); // set up XBee serial
@@ -58,7 +64,7 @@ void loop() {
     if (incoming != UNIQUE_ROBOT_CODE) {
 
       // Print signal to serial
-      sprintf(buf, "Received signal %c", incoming);
+      sprintf(buf, "Received signal %d", incoming);
       Serial.println(buf);
       
       // Blink receive indicator LED
