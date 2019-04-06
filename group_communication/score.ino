@@ -26,8 +26,6 @@
  * every other robot
  */
 
-#include "structs.h"
-
 // Comment out to disable serial debug stream
 #define DEBUG
 
@@ -156,6 +154,7 @@ int score(int my_id, int my_data) {
 
   #ifdef DEBUG
   static char buf[32];
+  #endif
 
   // Initialize data
   char my_message = make_data_message(my_id, my_data);
@@ -229,8 +228,12 @@ int score(int my_id, int my_data) {
               robots_confirmed[confirmer] = true;
               all_confirmed = check_all_confirmed(robots_confirmed);
               #ifdef DEBUG
-              sprintf(buf, "[%d] Confirmed [%d]", my_id, confirmer);
+              sprintf(buf, "[%d] Confirmation from [%d]", my_id, confirmer);
               Serial.println(buf);
+              if (all_confirmed) {
+                sprintf(buf, "[%d] --- All Confirmed ---", my_id);
+                Serial.println(buf);
+              }
               #endif
             }
           }
@@ -245,6 +248,10 @@ int score(int my_id, int my_data) {
             #ifdef DEBUG
             sprintf(buf, "[%d] \"Done\" from [%d]", my_id, data);
             Serial.println(buf);
+            if (all_done) {
+              sprintf(buf, "[%d] --- All Done ---", my_id);
+              Serial.println(buf);
+            }
             #endif
           }
         }
@@ -258,6 +265,10 @@ int score(int my_id, int my_data) {
             #ifdef DEBUG
             sprintf(buf, "[%d] Data from [%d]: %d", my_id, robot_id, data);
             Serial.println(buf);
+            if (all_data) {
+              sprintf(buf, "[%d] --- All Data ---", my_id);
+              Serial.println(buf);
+            }
             #endif
           }
         }
@@ -266,6 +277,10 @@ int score(int my_id, int my_data) {
   }
 
   // Tabulate score
-  
-  
+  // Count number of aligned bits in Chaser 1 and Beater 1 (or 2) data
+  // 10 points for each aligned bit, 150 if the snitch is found
+  int beater_chaser_1 = robots_data[ROBOT_ID_CHASER1] & robots_data[ROBOT_ID_BEATER1];
+  int beater_chaser_2 = robots_data[ROBOT_ID_CHASER2] & robots_data[ROBOT_ID_BEATER2];
+  int seeker = !!robots_data[ROBOT_ID_SEEKER]; // cast to 0 or 1
+  return __builtin_popcount(beater_chaser_1) * 10 + __builtin_popcount(beater_chaser_2) * 10 + seeker * 150;
 }
