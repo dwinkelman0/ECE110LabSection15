@@ -29,6 +29,9 @@
 // Comment out to disable serial debug stream
 #define DEBUG
 
+// Number of milliseconds to listen between each message broadcast
+#define LISTEN_DELAY 500
+
 // Codes for confirm and done messages
 #define ROBOT_ID_CONFIRM 7
 #define ROBOT_ID_DONE 6
@@ -190,11 +193,11 @@ int score(int my_id, int my_data) {
       messages[n_messages++] = my_message;
     }
 
-    // Check for data that has been received
+    // Check for data that has been received from other robots
     // For data received, add a confirm broadcast to message queue
     if (!all_data) {
       for (int i = 0; i < 5; i++) {
-        if (robots_data[i] != -1) {
+        if (robots_data[i] != -1 && i != my_id) {
           messages[n_messages++] = make_data_message(ROBOT_ID_CONFIRM, make_confirm_data(my_id, i));
         }
       }
@@ -210,7 +213,7 @@ int score(int my_id, int my_data) {
     for (int i = 0; i < n_messages; i++) {
       broadcast(my_id, messages[i]);
 
-      long t_end = millis() + 100;
+      long t_end = millis() + LISTEN_DELAY;
       char message;
       while ((message = receive_until(my_id, t_end)) != -1) {
         
