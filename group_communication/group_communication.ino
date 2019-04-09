@@ -81,9 +81,10 @@ void loop() {
     // TODO: implement code for stopping your robot
 
     // Broadcast this robot's information and get other robots' scores
-    int team_score = score(MY_ROBOT_ID, data);
+    int team_score = communicate_score(MY_ROBOT_ID, data);
 
     // Print team score to LCD
     // TODO: implement this
+    
   }
 }

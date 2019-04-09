@@ -7,7 +7,7 @@
  * 
  * 3 MSB are the robot_id, 5 LSB are the message
  * 
- * If the robot_id is 7, this indicates a "score received" confirmation
+ * If the robot_id is 5, this indicates a "score received" confirmation
  * message. The values are packed in base-5 number such that the ones-place is
  * robot who sent the confirmation message ("confirmer") and the fives-place is the robot
  * whose score was confirmed to have been received ("confirmee")
@@ -26,15 +26,25 @@
  * every other robot
  */
 
-// Comment out to disable serial debug stream
+// Comment out to disable ALL serial debug stream
 #define DEBUG
+#ifdef DEBUG
+// Comment out to disable notification of generic message broadcasting
+//#define DEBUG_ALL_BROADCAST
+
+// Comment out to disable notification of generic message receipt
+//#define DEBUG_ALL_RECEIPT
+#endif
 
 // Number of milliseconds to listen between each message broadcast
 #define LISTEN_DELAY 500
 
 // Codes for confirm and done messages
-#define ROBOT_ID_CONFIRM 7
+#define ROBOT_ID_CONFIRM 5
 #define ROBOT_ID_DONE 6
+
+// Special code for data which is NULL (invalid)
+#define NULL_DATA -1
 
 /**
  * Robot ID: the robot sending the data
@@ -84,22 +94,35 @@ void interpret_done_message(char message, int * robot_id) {
   interpret_data_message(message, NULL, robot_id);
 }
 
+/**
+ * Check that all data from other robots has been received
+ */
 boolean check_all_data(int * data) {
-  return data[0] != -1 && data[1] != -1 && data[2] != -1 && data[3] != -1 && data[4] != -1;
+  return data[0] != NULL_DATA && data[1] != NULL_DATA && data[2] != NULL_DATA && data[3] != NULL_DATA && data[4] != NULL_DATA;
 }
 
+/**
+ * Check that all other robots have confirmed receipt of this robot's data
+ */
 boolean check_all_confirmed(boolean * data) {
   return data[0] && data[1] && data[2] && data[3] && data[4];
 }
 
+/**
+ * Check that all other robots have declared themselves done
+ */
 boolean check_all_done(boolean * data) {
   return data[0] && data[1] && data[2] && data[3] && data[4];
 }
 
+/**
+ * Broadcast a message
+ * Debugging print statements included
+ */
 void broadcast(int my_id, char message) {
   Serial2.print(message);
 
-  #ifdef DEBUG
+  #ifdef DEBUG_ALL_BROADCAST
   static char buf[32];
   int robot_id, data;
   interpret_data_message(message, &robot_id, &data);
@@ -118,16 +141,24 @@ void broadcast(int my_id, char message) {
   #endif
 }
 
+/**
+ * Wait until either of the following happens:
+ *   - the Arduino's timer reaches a certain time
+ *       RETURNS NULL_DATA
+ *   - a message is received from the XBee
+ *       RETURNS (char)message
+ * Debugging print statements included
+ */
 char receive_until(int my_id, long t_end) {
-  char message = -1;
-  while (millis() < t_end && message == -1) {
+  char message = NULL_DATA;
+  while (millis() < t_end && message == NULL_DATA) {
     if (Serial2.available()) {
       message = Serial2.read();
     }
   }
 
-  #ifdef DEBUG
-  if (message != -1) {
+  #ifdef DEBUG_ALL_RECEIPT
+  if (message != NULL_DATA) {
     static char buf[32];
     int robot_id, data;
     interpret_data_message(message, &robot_id, &data);
@@ -153,7 +184,19 @@ char receive_until(int my_id, long t_end) {
   return message;
 }
 
-int score(int my_id, int my_data) {
+/**
+ * Compute score from data received from robots
+ */
+int compute_score(int * data) {
+  // Count number of aligned bits in Chaser 1 and Beater 1 (or 2) data
+  // 10 points for each aligned bit, 150 if the snitch is found
+  int beater_chaser_1 = data[ROBOT_ID_CHASER1] & data[ROBOT_ID_BEATER1];
+  int beater_chaser_2 = data[ROBOT_ID_CHASER2] & data[ROBOT_ID_BEATER2];
+  int seeker = !!data[ROBOT_ID_SEEKER]; // cast to 0 or 1
+  return __builtin_popcount(beater_chaser_1) * 10 + __builtin_popcount(beater_chaser_2) * 10 + seeker * 150;
+}
+
+int communicate_score(int my_id, int my_data) {
 
   #ifdef DEBUG
   static char buf[32];
@@ -163,7 +206,7 @@ int score(int my_id, int my_data) {
   char my_message = make_data_message(my_id, my_data);
 
   // Data sent by other robots
-  int robots_data[5] = {-1, -1, -1, -1, -1};
+  int robots_data[5] = {NULL_DATA, NULL_DATA, NULL_DATA, NULL_DATA, NULL_DATA};
   robots_data[my_id] = my_data;
   boolean all_data = false;
 
@@ -197,7 +240,7 @@ int score(int my_id, int my_data) {
     // For data received, add a confirm broadcast to message queue
     if (!all_data) {
       for (int i = 0; i < 5; i++) {
-        if (robots_data[i] != -1 && i != my_id) {
+        if (robots_data[i] != NULL_DATA && i != my_id) {
           messages[n_messages++] = make_data_message(ROBOT_ID_CONFIRM, make_confirm_data(my_id, i));
         }
       }
@@ -215,7 +258,7 @@ int score(int my_id, int my_data) {
 
       long t_end = millis() + LISTEN_DELAY;
       char message;
-      while ((message = receive_until(my_id, t_end)) != -1) {
+      while ((message = receive_until(my_id, t_end)) != NULL_DATA) {
         
         // Signal received; change data
         int robot_id, data;
@@ -262,7 +305,7 @@ int score(int my_id, int my_data) {
         else {
           // Data received from a robot
           // If this is new data, check again if all data has been received
-          if (robots_data[robot_id] == -1) {
+          if (robots_data[robot_id] == NULL_DATA) {
             robots_data[robot_id] = data;
             all_data = check_all_data(robots_data);
             #ifdef DEBUG
@@ -280,10 +323,5 @@ int score(int my_id, int my_data) {
   }
 
   // Tabulate score
-  // Count number of aligned bits in Chaser 1 and Beater 1 (or 2) data
-  // 10 points for each aligned bit, 150 if the snitch is found
-  int beater_chaser_1 = robots_data[ROBOT_ID_CHASER1] & robots_data[ROBOT_ID_BEATER1];
-  int beater_chaser_2 = robots_data[ROBOT_ID_CHASER2] & robots_data[ROBOT_ID_BEATER2];
-  int seeker = !!robots_data[ROBOT_ID_SEEKER]; // cast to 0 or 1
-  return __builtin_popcount(beater_chaser_1) * 10 + __builtin_popcount(beater_chaser_2) * 10 + seeker * 150;
+  return compute_score(robots_data);
 }
