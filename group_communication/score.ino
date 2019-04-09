@@ -16,7 +16,8 @@
  * of the robot that sent the message
  * 
  * A robot (e.g. Chaser 1) will broadcast its own data until Chaser 1 receives
- * confirmation messages that every other robot has received its data
+ * confirmation messages that every other robot has received its data; confirmation
+ * messages include "done" messages
  * 
  * At the point that a robot (e.g. Chaser 1) has received data from any robot (e.g. Beater 1), Chaser 1 will
  * broadcast a confirmation message for Beater 1 until it receives a "done" message from Beater 1
@@ -30,10 +31,10 @@
 #define DEBUG
 #ifdef DEBUG
 // Comment out to disable notification of generic message broadcasting
-//#define DEBUG_ALL_BROADCAST
+#define DEBUG_ALL_BROADCAST
 
 // Comment out to disable notification of generic message receipt
-//#define DEBUG_ALL_RECEIPT
+#define DEBUG_ALL_RECEIPT
 #endif
 
 // Number of milliseconds to listen between each message broadcast
@@ -218,14 +219,18 @@ int communicate_score(int my_id, int my_data) {
   // Other robots declaring themselves done
   boolean robots_done[5] = {false, false, false, false, false};
   robots_done[my_id] = true;
-  boolean all_done = false;  
+  boolean all_done = false;
 
   // Message queue
   char messages[32];
   int n_messages = 0;
 
+  // Final score
+  int final_score = 0;
+
   // Broadcast signals
-  while (!all_done) {
+  // Loop does not stop once all "done" signals are received
+  while (true) {
 
     memset(messages, sizeof(messages), 0);
     n_messages = 0;
@@ -300,6 +305,15 @@ int communicate_score(int my_id, int my_data) {
             }
             #endif
           }
+          // In order to prevent the situation in which robot A receives
+          // data from robot B, causing robot A to only broadcast "done",
+          // but robot B never received a confirm message from A, causing
+          // it to wait indefinitely, "done" messages also count as confirm
+          // messages
+          if (robots_confirmed[data] == false) {
+            robots_confirmed[data] = true;
+            all_confirmed = check_all_confirmed(robots_confirmed);
+          }
         }
         
         else {
@@ -320,8 +334,10 @@ int communicate_score(int my_id, int my_data) {
         }
       }
     }
-  }
 
-  // Tabulate score
-  return compute_score(robots_data);
+    // Display score to LCD
+    if (all_done) {
+      
+    }
+  }
 }

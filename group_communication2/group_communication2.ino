@@ -7,7 +7,7 @@
 #define ROBOT_ID_SEEKER  4
 
 // TODO: change this for your robot
-#define MY_ROBOT_ID ROBOT_ID_CHASER1
+#define MY_ROBOT_ID ROBOT_ID_BEATER1
 
 // Define pins for XBee serial
 #define Rx 17 // define transmitting pin
