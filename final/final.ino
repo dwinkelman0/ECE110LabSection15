@@ -27,6 +27,9 @@ Servo servoLeft;
 // Code for this robot
 #define MY_ROBOT_ID ROBOT_ID_CHASER1
 
+// Comment out to disable printing RC times to serial
+//#define DEBUG_RC_TIME
+
 /**
  * Compare function for QTI sensing of ramps
  *  e.g. rc_time(PIN_NUMBER, comp_func_ramps);
@@ -61,9 +64,12 @@ long rc_time(int pin, long comp_func(long)) {
 
   long duration = 0;
   while(digitalRead(pin)) duration++;
-  char buf[32];
+
+  #ifdef DEBUG_RC_TIME
+  static char buf[32];
   sprintf(buf, "%d: %d", pin, duration);
   Serial.println(buf);
+  #endif
 
   return comp_func(duration);
 }
@@ -80,12 +86,15 @@ void setup() {
   // Set up serials
   Serial.begin(9600); // set up keyboard serial
   Serial2.begin(9600); // set up XBee serial
-  Serial3.begin(9600); // set up LCD serial
+  Serial3.begin(19200); // set up LCD serial
 
   // Initialize ramp sensor threshold
   rc_time(PIN_RAMP_SENSOR, comp_func_ramps);
 
   delay(500);
+
+  // Just for fun
+  Serial3.println("Chaser 1");
 }
 
 void loop() {

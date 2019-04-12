@@ -16,10 +16,10 @@
 #define DEBUG
 #ifdef DEBUG
 // Comment out to disable notification of generic message broadcasting
-//#define DEBUG_ALL_BROADCAST
+#define DEBUG_ALL_BROADCAST
 
 // Comment out to disable notification of generic message receipt
-#define DEBUG_ALL_RECEIPT
+//#define DEBUG_ALL_RECEIPT
 #endif
 
 // Number of milliseconds to listen between each message broadcast
