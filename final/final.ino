@@ -80,9 +80,6 @@ void setup() {
   servoRight.attach(PIN_SERVO_RIGHT);
   servoLeft.attach(PIN_SERVO_LEFT);
 
-  pinMode(PIN_RAMP_LED_OUTPUT, OUTPUT);
-  digitalWrite(PIN_RAMP_LED_OUTPUT, LOW);
-
   // Set up serials
   Serial.begin(9600); // set up keyboard serial
   Serial2.begin(9600); // set up XBee serial
@@ -111,16 +108,9 @@ void loop() {
   // Aggregated data about ramps being at each hash
   // 0 = no ramp, 1 = ramp
   static int data = 0;
-
-  if (n_hashes >= 5) {
-    servoRight.writeMicroseconds(1500);
-    servoLeft.writeMicroseconds(1500);
-    return;
-  }
   
   // The robot is on track
   // GO STRAIGHT
-  else
   if (!left && center && !right) {
     servoRight.writeMicroseconds(1435); // correct for right-drifting
     servoLeft.writeMicroseconds(1560);
