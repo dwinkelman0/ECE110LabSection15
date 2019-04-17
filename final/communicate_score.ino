@@ -164,8 +164,12 @@ int communicate_score(int my_id, int my_data) {
 
   // Calculate score and display to LCD
   int final_score = compute_score(robots_data);
-  sprintf(buf, "Score: %d", final_score);
-  Serial3.println(final_score);
+  sprintf(buf, "Team: %3d       Self:%d Group:%d",
+      final_score,
+      __builtin_popcount(robots_data[0]),
+      __builtin_popcount(robots_data[0] & robots_data[1]) * 10);
+  Serial3.write(12);
+  Serial3.print(buf);
   #ifdef DEBUG
   sprintf(buf, "**** Final Score: %d ****", final_score);
   Serial.println(buf);
