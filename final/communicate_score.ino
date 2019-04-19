@@ -120,6 +120,9 @@ int compute_score(int * data) {
 
 int communicate_score(int my_id, int my_data) {
 
+  // Flush XBee input
+  while (Serial2.available()) Serial2.read();
+
   static char buf[32];
 
   // Display broadcast to LCD
@@ -157,8 +160,9 @@ int communicate_score(int my_id, int my_data) {
 
       // Data received from a robot
       // If this is new data, check again if all data has been received
-      if (robots_data[robot_id] == NULL_DATA) {
-        robots_data[robot_id] = data;
+      char old_data = robots_data[robot_id];
+      robots_data[robot_id] = data;
+      if (robots_data[robot_id] != old_data) {
         all_data = check_all_data(robots_data);
         #ifdef DEBUG
         sprintf(buf, "[%d] Data from [%d]: %d", my_id, robot_id, data);

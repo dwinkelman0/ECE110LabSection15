@@ -138,7 +138,8 @@ void setup() {
   Serial3.write(12);
   Serial3.println("Chaser 1");
 
-  // Flush XBee input
+  // Flush XBee input/output
+  Serial2.flush();
   while (Serial2.available()) Serial2.read();
 }
 
