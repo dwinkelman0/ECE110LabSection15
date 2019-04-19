@@ -181,6 +181,8 @@ int communicate_score(int my_id, int my_data) {
   Serial3.write(12);
   Serial3.print(buf);
   #ifdef DEBUG
+  sprintf(buf, "**** %d %d %d %d %d ****", robots_data[0], robots_data[1], robots_data[2], robots_data[3], robots_data[4]);
+  Serial.println(buf);
   sprintf(buf, "**** Final Score: %d ****", final_score);
   Serial.println(buf);
   #endif

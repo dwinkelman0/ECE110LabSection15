@@ -137,6 +137,9 @@ void setup() {
   // Sanity check for LCD
   Serial3.write(12);
   Serial3.println("Chaser 1");
+
+  // Flush XBee input
+  while (Serial2.available()) Serial2.read();
 }
 
 void loop() {
