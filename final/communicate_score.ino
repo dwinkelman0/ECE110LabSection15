@@ -122,6 +122,16 @@ int communicate_score(int my_id, int my_data) {
 
   static char buf[32];
 
+  // Display broadcast to LCD
+  sprintf(buf, "Broadcasting....12345: %d%d%d%d%d",
+      (my_data >> 0) & 1,
+      (my_data >> 1) & 1,
+      (my_data >> 2) & 1,
+      (my_data >> 3) & 1,
+      (my_data >> 4) & 1);
+  Serial3.write(12);
+  Serial3.print(buf);
+
   // Initialize data
   char my_message = make_data_message(my_id, my_data);
 
